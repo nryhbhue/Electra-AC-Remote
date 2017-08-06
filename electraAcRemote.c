@@ -1,145 +1,43 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <inttypes.h>
+#include "irslinger.h"
+#include "electraAcRemoteEncoder.h"
 
-#include "electraAcRemote.h"
-
-void initializeStruct (struct airCon* newAcPointer)
+int main(int argc,char *argv[])
 {
-    int i = 0;
-    newAcPointer->fullState = FULL_STATE_MASK;
-    newAcPointer->fan = FAN_MASK;
-    newAcPointer->mode = MODE_MASK;
-    newAcPointer->temp = TEMP_MASK;
-    for (i = 0;i < TIMINGS_LENGTH;i++){
-        (newAcPointer->manchesterTimings)[i] = 0;
+    int i = 0,acState,acMode;
+    struct airCon newAc;;
+    uint32_t outPin = 20;           // The Broadcom pin number the signal will be sent on
+    int frequency = 38000;          // The frequency of the IR signal in Hz
+    double dutyCycle = 0.5;         // The duty cycle of the IR signal. 0.5 means for every cycle,
+	                            // the LED will turn on for half the cycle time, and off the other half
+    int *codes = NULL;
+
+    if (argc!=5){
+        printf("Invalid arguments\n");
+        printf("usage: Fan Strength [1-4] (4=auto), Mode [COOL/HEAT], Temp [16-30], State [ON,OFF]\n(ON - if the AC is already running)\n");
+        printf("\nFor example: ./electraAcRemote 1 COOL 25 ON\n");
+        return 1;
     }
-}
-
-void updateFan (int value,struct airCon* newAcPointer)
-{
-    newAcPointer->fan &= (value-1);
-    newAcPointer->fan = (newAcPointer->fan) << 28;
-    newAcPointer->fullState |= newAcPointer->fan;
-}
-
-void updateMode (int value,struct airCon* newAcPointer)
-{
-    newAcPointer->mode &= (value);
-    newAcPointer->mode = (newAcPointer->mode) << 30;
-    newAcPointer->fullState |= newAcPointer->mode;
-}
-
-void updateTemperature (int value,struct airCon* newAcPointer)
-{
-    newAcPointer->temp &= (value-15);
-    newAcPointer->temp = (newAcPointer->temp) << 19;
-    newAcPointer->fullState |= newAcPointer->temp;
-}
-
-void updateParameter (acParameter parameter,int value,struct airCon* newAcPointer)
-{
-    switch (parameter) {
-    case fan:
-        updateFan(value,newAcPointer);
-        break;
-    case mode:
-        updateMode(value,newAcPointer);
-        break;
-    case temp:
-        updateTemperature(value,newAcPointer);
-        break;
-    }
-}
-
-void convertStateToBitStrings (struct airCon* newAcPointer)
-{
-    int i = 0;
-    uint64_t toggleMask = 1,fullStateCopy;
-
-    fullStateCopy = newAcPointer->fullState;
-
-    for (i = DATA_BITS_LENGTH-1;i >= 0;i--){
-        sprintf((newAcPointer->bitStrings)[i],"%d",fullStateCopy & toggleMask);
-        fullStateCopy = fullStateCopy >> 1;
-    }
-}
-
-void convertBitStringsToManchesterString (struct airCon* newAcPointer)
-{
-    int i = 0;
-    for (i = 0;i < DATA_BITS_LENGTH;i++){
-        if ((newAcPointer->bitStrings)[i][0] == '0'){
-            strcpy((newAcPointer->manchesterString) + 2*i,"01");
-        }
-        else{
-            strcpy((newAcPointer->manchesterString) + 2*i,"10");
-        }
-    }
-}
-
-void convertManchesterStringToManchesterTimings (struct airCon* newAcPointer)
-{
-    int stringPointer = 0;
-    int timingPointer = 0;
-    int counter = 0;
-    int i = 0;
-
-    (newAcPointer->manchesterTimings)[timingPointer] = 3000;
-    timingPointer++;
-
-    if ((newAcPointer->manchesterString)[0] == '1'){
-        (newAcPointer->manchesterTimings)[timingPointer] = 4000;
-        stringPointer++;
+    if(!strcmp(argv[2],"COOL")){
+        acMode = COOL;
     }
     else{
-        (newAcPointer->manchesterTimings)[timingPointer] = 3000;
-    }
-    timingPointer++;
-
-    for (stringPointer;stringPointer < DATA_BITS_LENGTH*2;stringPointer++){
-
-        while ((newAcPointer->manchesterString)[stringPointer] == '0'){
-            counter++;
-            stringPointer++;
-        }
-        (newAcPointer->manchesterTimings)[timingPointer] = 1000*counter;
-        counter = 0;
-        timingPointer++;
-
-        while ((newAcPointer->manchesterString)[stringPointer] == '1'){
-            counter++;
-            stringPointer++;
-        }
-        (newAcPointer->manchesterTimings)[timingPointer] = 1000*counter;
-        counter = 0;
-        timingPointer++;
-        stringPointer--;
+        printf("Invalid mode argument!\n");
+        printf("usage: Fan Strength [1-4] (4=Auto), Mode [COOL/HEAT], Temp [16-30], State [ON,OFF]\n(ON - if the AC is already running)\n");
+        return 1;
     }
 
-    (newAcPointer->manchesterTimings)[3*timingPointer] = 4000;
-
-    for (i=0;i<timingPointer;i++){
-        (newAcPointer->manchesterTimings)[i+timingPointer] = (newAcPointer->manchesterTimings)[i];
-        (newAcPointer->manchesterTimings)[i+timingPointer*2] = (newAcPointer->manchesterTimings)[i];
+    if(!strcmp(argv[4],"ON")){
+        acState = ON;
     }
-}
-
-int *getCodes (struct airCon* newAc,int fanV,int modeV,int tempV,int state)
-{
-
-    initializeStruct(newAc);
-    updateParameter(fan,fanV,newAc);
-    updateParameter(temp,tempV,newAc);
-    updateParameter(mode,modeV,newAc);
-
-    convertStateToBitStrings(newAc);
-    if (state == ON){
-        (newAc->bitStrings)[0][0] = '0';
+    if(!strcmp(argv[4],"OFF")){
+        acState = OFF;
     }
-    convertBitStringsToManchesterString(newAc);
-    convertManchesterStringToManchesterTimings(newAc);
 
-    return newAc->manchesterTimings;
+    codes = getCodes(&newAc,atoi(argv[1]),acMode,atoi(argv[3]),acState);
+
+    int result = irSlingRaw(outPin,frequency,dutyCycle,codes,TIMINGS_LENGTH*sizeof(int)/sizeof(int));
+
+    return result;
 }
