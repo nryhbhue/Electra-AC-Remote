@@ -15,9 +15,9 @@ Dependencies and Usage:
 * Clone "Electra-AC-Remote" and "ir-slinger"
 * Copy "irslinger.h" to the cloned "Electra-AC-Remote" directory
 * Compile (change the IR-transmitter's gpio in "electraAcRemote.c" if needed):
-	
+'''
 	gcc electraAcRemote.c electraAcRemoteEncoder.c -o electraAcRemote -lm -lpigpio -pthread -lrt
-
+'''
 * Once this is done you're free to test your AC remote:
 	* Arguments: Fan, Mode, Temperature, State
 	
