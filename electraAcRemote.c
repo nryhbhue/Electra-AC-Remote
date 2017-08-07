@@ -22,6 +22,9 @@ int main(int argc,char *argv[])
     if(!strcmp(argv[2],"COOL")){
         acMode = COOL;
     }
+    if(!strcmp(argv[2],"HEAT")){
+        acMode = HEAT;
+    }
     else{
         printf("Invalid mode argument!\n");
         printf("usage: Fan Strength [1-4] (4=Auto), Mode [COOL/HEAT], Temp [16-30], State [ON,OFF]\n(ON - if the AC is already running)\n");
