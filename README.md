@@ -7,6 +7,7 @@ Supporterd features:
 * Mode [COOL/HEAT]
 * Temperature [16-30]
 * Fan [1-4], with 4 being Auto
+* Swing [SWING_ON/SWING_OFF/SWING_SINGLE]
 * State [ON/OFF]
 
 Dependencies and Usage:
@@ -22,7 +23,7 @@ Dependencies and Usage:
 * Once this is done you're free to test your AC remote:
 	* Arguments: Fan, Mode, Temperature, State
 	
-	  For example: `./electraAcRemote 2 COOL 25 ON`
+	  For example: `./electraAcRemote 2 COOL 25 ON SWING_OFF`
 	 
 	 * The ON state is used for changing settings while the AC is already up and running
 	 * The OFF state turns the AC on and off just like the power button on an actual remote
