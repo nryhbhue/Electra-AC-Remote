@@ -12,6 +12,7 @@ void initializeStruct (struct airCon* newAcPointer)
     newAcPointer->fan = FAN_MASK;
     newAcPointer->mode = MODE_MASK;
     newAcPointer->temp = TEMP_MASK;
+    newAcPointer->swing = SWING_MASK;
     for (i = 0;i < TIMINGS_LENGTH;i++){
         (newAcPointer->manchesterTimings)[i] = 0;
     }
@@ -38,6 +39,13 @@ void updateTemperature (int value,struct airCon* newAcPointer)
     newAcPointer->fullState |= newAcPointer->temp;
 }
 
+void updateSwing (int value,struct airCon* newAcPointer)
+{
+    newAcPointer->swing &= (value);
+    newAcPointer->swing = (newAcPointer->swing) << 25;
+    newAcPointer->fullState |= newAcPointer->swing;
+}
+
 void updateParameter (acParameter parameter,int value,struct airCon* newAcPointer)
 {
     switch (parameter) {
@@ -49,6 +57,9 @@ void updateParameter (acParameter parameter,int value,struct airCon* newAcPointe
         break;
     case temp:
         updateTemperature(value,newAcPointer);
+        break;
+    case swing:
+        updateSwing(value,newAcPointer);
         break;
     }
 }
@@ -126,13 +137,14 @@ void convertManchesterStringToManchesterTimings (struct airCon* newAcPointer)
     }
 }
 
-int *getCodes (struct airCon* newAc,int fanV,int modeV,int tempV,int state)
+int *getCodes (struct airCon* newAc,int fanV,int modeV,int tempV,int state,int swingV)
 {
 
     initializeStruct(newAc);
     updateParameter(fan,fanV,newAc);
     updateParameter(temp,tempV,newAc);
     updateParameter(mode,modeV,newAc);
+    updateParameter(swing,swingV,newAc);
 
     convertStateToBitStrings(newAc);
     if (state == ON){
