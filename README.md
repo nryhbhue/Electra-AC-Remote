@@ -1,7 +1,17 @@
 # Electra-AC-Remote
-This little library generates raw IR commands for your Electra air conditioner (Raspberry Pi)
+This little library generates raw IR commands for your Electra air conditioner using Raspberry Pi
 ![electra remote](https://user-images.githubusercontent.com/29211431/29035330-d7b80a4e-7ba3-11e7-8573-9e5ed1d00ba0.jpg)
 
+What you'll need:
+-----------------
+* Raspberry Pi
+* Small IR led circuit (google how to build one with a transistor, there are numerous instructables)
+	* Parts (usually):
+		* IR led (take apart an old remote and start desoldering or just order a batch from ebay. MIND THE POLARITY!)
+		* Transistor (once again, if you're impatient take apart a power saving bulb)
+		* Resistor (check the transistor's datasheet in order to understand which resistor to use, you don't want to draw too much current from your Pi or burn your led)
+* Optional: blynk account (preferably on a local server for maximum energy) 
+		
 Supporterd features:
 --------------------
 * Mode [COOL/HEAT]
@@ -21,7 +31,7 @@ Dependencies and Usage:
 	`gcc electraAcRemote.c electraAcRemoteEncoder.c -o electraAcRemote -lm -lpigpio -pthread -lrt`
 
 * Once this is done you're free to test your AC remote:
-	* Arguments: Fan, Mode, Temperature, State
+	* Arguments: Fan, Mode, Temperature, State, Swing
 	
 	  For example: `./electraAcRemote 2 COOL 25 ON SWING_OFF`
 	 
