@@ -42,4 +42,5 @@ Integration with blynk:
 -----------------------
 [Blynk](https://github.com/blynkkk) is a great way to get you started with a comfortable interface for this remote.
 Here's how I set up mine:
-![blynk - ac remote - heat](https://user-images.githubusercontent.com/29211431/29036057-8ce84be8-7ba6-11e7-9676-90ed96466e1a.png) ![blynk - ac remote - cool](https://user-images.githubusercontent.com/29211431/29036058-8d9b1908-7ba6-11e7-9e43-50c29af920dc.png)
+![electra ac remote - cool](https://user-images.githubusercontent.com/29211431/29248242-180dd9bc-801c-11e7-8c08-30401ecb22a9.png)
+![electra ac remote - heat](https://user-images.githubusercontent.com/29211431/29248243-1833ab74-801c-11e7-9f41-de71a279608c.png)
