@@ -64,12 +64,12 @@ void irRemoteSendRaw (int *codes, int len)
     }
 }
 
-void sendCodesTask()
+void sendCodesTask(int state)
 {
     struct airCon newAc;
     int *codes;
 
-    codes = getCodes(&newAc,fanStrength,acMode,temperature,acState,acSwing);
+    codes = getCodes(&newAc,fanStrength,acMode,temperature,state,acSwing);
     irRemoteSendRaw(codes,TIMINGS_LENGTH);
 }
 
@@ -78,7 +78,7 @@ BLYNK_WRITE(V1) //Temperature: step widget
     temperature = param.asInt();
     Blynk.virtualWrite(V7,temperature);
     if (acState){
-        sendCodesTask();
+        sendCodesTask(acState);
     }
 }
 
@@ -86,7 +86,7 @@ BLYNK_WRITE(V2) //Fan: step widget
 {
     fanStrength = param.asInt();
     if (acState){
-        sendCodesTask();
+        sendCodesTask(acState);
     }
 }
 
@@ -94,7 +94,7 @@ BLYNK_WRITE(V3) //Swing: slider widget
 {
     acSwing = param.asInt();
     if (acState){
-        sendCodesTask();
+        sendCodesTask(acState);
     }
 }
 
@@ -119,7 +119,7 @@ BLYNK_WRITE(V4) //Mode selection: table widget
     Blynk.setProperty(V4,"color",color); // MODE
 
     if (acState){
-        sendCodesTask();
+        sendCodesTask(acState);
     }
 }
 
@@ -129,7 +129,7 @@ BLYNK_WRITE(V5) // ON/OFF: button widget
     char ledOff[] = "0";
     char *ledState = NULL;
 
-    sendCodesTask();
+    sendCodesTask(0);
     acState ^= 1;
     if (acState){
         ledState = ledOn;
