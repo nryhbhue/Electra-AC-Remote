@@ -56,6 +56,11 @@ Dependencies and Usage:
 	 
 	 * The ON state is used for changing settings while the AC is already up and running
 	 * The OFF state turns the AC on and off just like the power button on an actual remote
+	 
+ESP8266 Support:
+----------------
+I added an arduino sketch to use with an esp8266 module, this also includes the Blynk implementation below. There is no need in "ir-slinger"'s library in this case, just add "electraAcRemoteEncoder.c" (change the extension to ".cpp" if needed) and "electraAcRemoteEncoder.h" files to your library in the Arduino IDE and flash your module after providing the Wifi and Blynk data.
+The circuitry is the same as for the Raspberry Pi, but this time around the IR led is driven by the esp8266's gpio. I used an esp8266-01 module to test this, it's very limited gpio-wise so I connected the RX pin to the transistor's base since it's okay for it to be low if the module resets for some reason (as opposed to gpio 2 which will not enable the module to boot if it's pulled low).
 
 Integration with blynk:
 -----------------------
