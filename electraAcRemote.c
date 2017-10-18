@@ -3,10 +3,10 @@
 #include "irslinger.h"
 #include "electraAcRemoteEncoder.h"
 
-int main(int argc,char *argv[])
+int main (int argc,char *argv[])
 {
     int i = 0,acState,acMode,acSwing;
-    struct airCon newAc;;
+    struct airCon newAc;
     uint32_t outPin = 20; //Pin number according to BCM
     int frequency = 38000;
     double dutyCycle = 0.5;
@@ -45,6 +45,12 @@ int main(int argc,char *argv[])
     codes = getCodes(&newAc,atoi(argv[1]),acMode,atoi(argv[3]),acState,acSwing);
 
     int result = irSlingRaw(outPin,frequency,dutyCycle,codes,TIMINGS_LENGTH*sizeof(int)/sizeof(int));
+
+    printf("[");
+    for (i=0;i<TIMINGS_LENGTH;i++){
+        printf("%d,",codes[i]);
+    }
+    printf("\b]\n");
 
     return result;
 }
