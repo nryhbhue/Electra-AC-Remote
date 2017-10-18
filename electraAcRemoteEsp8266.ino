@@ -1,4 +1,4 @@
- #include <ESP8266WiFi.h>
+#include <ESP8266WiFi.h>
 #include <BlynkSimpleEsp8266.h>
 #include <electraAcRemoteEncoder.h> /* Add the electraAcRemoteEncoder header and source code files to your library in the Arduino IDE.
                                        You will probably need to change the extension of the source file to ".cpp" for it to compile */
@@ -11,7 +11,7 @@
 char ssid[] = ""; //Insert your network's SSID here
 char pass[] = ""; //Insert your network's password here
 char auth[] = ""; //Insert your Blynk project's authentication token here
-char localIp = "" //Insert your local server's ip address if you're using one
+char localIp[] = ""; //Insert your local server's ip address if you're using one
 
 ////// AC GLOBALS //////
 int acState = 0;
@@ -129,7 +129,7 @@ BLYNK_WRITE(V5) // ON/OFF: button widget
     char ledOff[] = "0";
     char *ledState = NULL;
 
-    send_code_task();
+    sendCodesTask();
     acState ^= 1;
     if (acState){
         ledState = ledOn;
